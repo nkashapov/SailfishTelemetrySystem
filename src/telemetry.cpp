@@ -1,23 +1,15 @@
 // telemetry.cpp
-#include "dbusutil.h"
 #include "telemetry.h"
-#include <QDBusInterface>
-#include <QDBusReply>
-#include <QDBusMessage>
-#include <QXmlStreamReader>
-#include <QDBusInterface>
 #include "appevent.h"
 
-namespace
-{
-    const QString serviceName{"ru.sonarh.dbus.telemetry"};
-    const QString path{"/ru/sonarh/dbus/telemetry"};
-}
+#include <QDBusReply>
+#include <QDBusMessage>
+#include <QDBusInterface>
 
 struct Telemetry::Impl
 {
-    QString serviceName;
-    QDBusConnection dBusConnection = QDBusConnection::systemBus();
+    const QString serviceName{"ru.sonarh.dbus.telemetry"};
+    const QString path{"/ru/sonarh/dbus/telemetry"};
 };
 
 Telemetry::Telemetry(QObject *parent) :
@@ -52,13 +44,8 @@ void Telemetry::sendVal(const QString &newtext)
 
 void Telemetry::sendMessage(const QString &messageToSend)
 {
-    bool isSystemBus = false;
-    QString interfaceName = "ru.buffer";
-    QString methodName = "sendTel";
-    QList<QVariant> arguments = {messageToSend};
-    d->dBusConnection = isSystemBus ? QDBusConnection::systemBus() : QDBusConnection::sessionBus();
-    QDBusInterface interface(::serviceName, ::path, interfaceName, d->dBusConnection);
-    interface.callWithArgumentList(QDBus::Block, methodName,
-                                   DBusUtil::convertToDBusArguments(arguments, interface, methodName));
+    auto interfaceName = "ru.buffer";
+    auto methodName = "sendTel";
+    QDBusInterface interface(d->serviceName, d->path, interfaceName);
+    interface.call(QDBus::Block, methodName, messageToSend);
 }
-
