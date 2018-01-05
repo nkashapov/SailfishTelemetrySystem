@@ -7,19 +7,27 @@
 #include <QXmlStreamReader>
 #include <QDBusInterface>
 #include "appevent.h"
-#include "appevents.cpp"
 
-void Telemetry::sendMessage(QString messageToSend){
-    QString serviceName = "ru.sonarh.dbus.telemetry";
-    bool isSystemBus = false;
-    QString path = "/ru/sonarh/dbus/telemetry";
-    QString interfaceName = "ru.buffer";
-    QString methodName = "sendTel";
-    QList<QVariant> arguments = QList<QVariant>();
-    arguments.append(QVariant(messageToSend));
-    dDusConnection = isSystemBus ? QDBusConnection::systemBus() : QDBusConnection::sessionBus();
-    QDBusInterface interface(serviceName, path, interfaceName, dDusConnection);
-    interface.callWithArgumentList(QDBus::Block, methodName, DBusUtil::convertToDBusArguments(arguments, interface, methodName));
+namespace
+{
+    const QString serviceName{"ru.sonarh.dbus.telemetry"};
+    const QString path{"/ru/sonarh/dbus/telemetry"};
+}
+
+struct Telemetry::Impl
+{
+    QString serviceName;
+    QDBusConnection dBusConnection = QDBusConnection::systemBus();
+};
+
+Telemetry::Telemetry(QObject *parent) :
+    QObject(parent),
+    d(new Impl)
+{
+}
+
+Telemetry::~Telemetry()
+{
 }
 
 void Telemetry::sendOpen()
@@ -31,11 +39,26 @@ void Telemetry::sendClose()
 {
     sendMessage("Close!");
 }
-void Telemetry::sendVal(QString newtext)
-{
-    sendMessage(newtext);
-}
-void Telemetry::sendEvent(AppEvent event)
+
+void Telemetry::sendEvent(const AppEvent& event)
 {
     sendMessage(event.getName());
 }
+
+void Telemetry::sendVal(const QString &newtext)
+{
+    sendMessage(newtext);
+}
+
+void Telemetry::sendMessage(const QString &messageToSend)
+{
+    bool isSystemBus = false;
+    QString interfaceName = "ru.buffer";
+    QString methodName = "sendTel";
+    QList<QVariant> arguments = {messageToSend};
+    d->dBusConnection = isSystemBus ? QDBusConnection::systemBus() : QDBusConnection::sessionBus();
+    QDBusInterface interface(::serviceName, ::path, interfaceName, d->dBusConnection);
+    interface.callWithArgumentList(QDBus::Block, methodName,
+                                   DBusUtil::convertToDBusArguments(arguments, interface, methodName));
+}
+

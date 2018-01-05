@@ -19,8 +19,7 @@ QT += dbus
 SOURCES += src/TestMetrics.cpp \
     src/telemetry.cpp \
     src/dbusutil.cpp \
-    src/appevent.cpp \
-    src/appevents.cpp
+    src/appevent.cpp
 
 DISTFILES += qml/TestMetrics.qml \
     qml/cover/CoverPage.qml \

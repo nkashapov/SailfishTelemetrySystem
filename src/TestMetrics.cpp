@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     //   - SailfishApp::pathToMainQml() to get a QUrl to the main QML file
     //
     // To display the view, call "show()" (will show fullscreen on device).
-    qmlRegisterType<Telemetry>("harbour.TestMetrics.TelemetryM",1,0,"Telemetry");
+    qmlRegisterType<Telemetry>("harbour.TestMetrics.TelemetryM", 1, 0, "Telemetry");
 
     return SailfishApp::main(argc, argv);
 }

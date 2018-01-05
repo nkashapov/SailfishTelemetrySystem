@@ -2,28 +2,17 @@
 #define APPEVENT_H
 
 #include <QObject>
-#include <QException>
 
 class AppEvent : public QObject
 {
     Q_OBJECT
+
+public:
+    explicit AppEvent(const QString &input, QObject *parent = nullptr);
+    QString getName() const;
+
 private:
     QString eventName;
-public:
-    explicit AppEvent(QString input){
-        eventName = input;
-    }
-    explicit AppEvent(std::exception &e){
-        eventName = QString(e);
-    }
-    QString getName(){
-        return eventName();
-    }
-
-
-signals:
-
-public slots:
 };
 
 #endif // APPEVENT_H

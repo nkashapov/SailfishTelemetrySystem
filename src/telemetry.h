@@ -1,29 +1,28 @@
 #ifndef TELEMETRY_H
 #define TELEMETRY_H
 
-#include <QDBusInterface>
-#include <QDBusReply>
-#include <QDBusMessage>
-#include <QXmlStreamReader>
-#include "appevent.h"
-// telemetry.h
-
 #include <QObject>
 
-class Telemetry : public QObject {
+class AppEvent;
+
+class Telemetry : public QObject
+{
     Q_OBJECT
-private:
-    QString serviceName;
-    QDBusConnection dDusConnection;
-    Q_INVOKABLE void sendMessage(QString messageToSend);
+
 public:
-    Telemetry() : serviceName(""),dDusConnection(QDBusConnection::systemBus()) {}
+    Telemetry(QObject *parent = nullptr);
+    ~Telemetry();
+
     Q_INVOKABLE void sendOpen();
     Q_INVOKABLE void sendClose();
-    Q_INVOKABLE void sendEvent(AppEvent event);
-    Q_INVOKABLE void sendVal(QString newtext);
-private slots:
-signals:
+    Q_INVOKABLE void sendEvent(const AppEvent& event);
+    Q_INVOKABLE void sendVal(const QString& newtext);
+
+private:
+    Q_INVOKABLE void sendMessage(const QString &messageToSend);
+
+    struct Impl;
+    const QScopedPointer<Impl> d;
 };
 
 #endif // TELEMETRY_H
