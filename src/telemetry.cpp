@@ -45,7 +45,11 @@ void Telemetry::sendVal(const QString &newtext)
 void Telemetry::sendMessage(const QString &messageToSend)
 {
     auto interfaceName = "ru.buffer";
-    auto methodName = "sendTel";
+    auto methodName = "sendTelemetry";
     QDBusInterface interface(d->serviceName, d->path, interfaceName);
-    interface.call(QDBus::Block, methodName, messageToSend);
+
+    if (interface.isValid())
+    {
+        interface.call(QDBus::Block, methodName, messageToSend);
+    }
 }
